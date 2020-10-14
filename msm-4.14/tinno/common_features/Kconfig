@@ -1,0 +1,15 @@
+config TINNO_PRODUCT_INFO
+    bool "TINNO_PRODUCT_INFO"
+    default n
+    
+config PROJECT_TINNO
+    bool "PROJECT_TINNO"
+    default n
+
+config PROJECT_P710
+    bool "PROJECT_P710"
+    default n
+
+config TINNO_TP_GESTURE
+    bool "TINNO_TP_GESTURE"
+    default n

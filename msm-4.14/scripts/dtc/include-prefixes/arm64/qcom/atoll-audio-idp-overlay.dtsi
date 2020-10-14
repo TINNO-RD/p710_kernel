@@ -1,0 +1,99 @@
+/* Add SmartPA config */
+&qupv3_se9_i2c {
+	status = "okay";
+
+	fs1862@34 {
+		compatible = "foursemi,fs16xx";
+		reg = <0x34>;
+		status = "okay";
+	};
+};
+
+/* Configure MI2S0 SD0&SD1 */
+&dai_mi2s0 {
+	/* SD0 line for playback */
+	qcom,msm-mi2s-rx-lines = <1>;
+	/* SD1 line for recording(SmartPA EC) */
+	qcom,msm-mi2s-tx-lines = <2>;
+};
+
+/* Add pinctrl for MI2S0 */
+&tlmm {
+	mi2s_0_pins: mi2s_0_pins {
+		mi2s_0_active: mi2s_0_active {
+			mux {
+				pins = "gpio53", "gpio54",
+						"gpio55", "gpio56";
+				function = "mi2s_0";
+			};
+
+			config {
+				pins = "gpio53", "gpio54",
+						"gpio55", "gpio56";
+				drive-strength = <6>;
+				bias-disable;
+			};
+		};
+
+		mi2s_0_sleep: mi2s_0_sleep {
+			mux {
+				pins = "gpio53", "gpio54",
+						"gpio55", "gpio56";
+				function = "mi2s_0";
+			};
+
+			config {
+				pins = "gpio53", "gpio54",
+						"gpio55", "gpio56";
+				drive-strength = <6>;
+				bias-disable;
+			};
+		};
+
+	};
+};
+
+&q6core {
+        cdc_pri_mi2s_gpios: cdc_pri_mi2s_pinctrl {
+                compatible = "qcom,msm-cdc-pinctrl";
+                pinctrl-names = "aud_active", "aud_sleep";
+                pinctrl-0 = <&mi2s_0_active>;
+                pinctrl-1 = <&mi2s_0_sleep>;
+        };
+};
+
+/* 1. Disable WSA Speaker Amp
+ * 2. Add pri-mi2s pinctrl entry
+ * 3. Remove Dmic pinctrl
+ * 4. Enable MI2S interface
+ */
+
+&bolero {
+	qcom,num-macros = <3>;
+};
+
+&wsa_macro {
+	status = "disabled";
+};
+
+&wsa_swr_gpios {
+	status = "disabled";
+};
+
+&wsa_spkr_en1 {
+	status = "disabled";
+};
+
+&wsa_spkr_en2 {
+	status = "disabled";
+};
+
+&atoll_snd {
+	qcom,mi2s-audio-intf = <1>;
+	qcom,wsa-max-devs = <0>;
+	qcom,pri-mi2s-gpios = <&cdc_pri_mi2s_gpios>;
+
+	/delete-property/ qcom,cdc-dmic01-gpios;
+	/delete-property/ qcom,cdc-dmic23-gpios;
+	/delete-property/ qcom,cdc-dmic45-gpios;
+};

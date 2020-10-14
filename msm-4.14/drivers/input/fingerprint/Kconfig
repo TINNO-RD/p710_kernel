@@ -1,0 +1,27 @@
+#
+# fingerprint driver configuration
+#
+
+config INPUT_FINGERPRINT
+  bool INPUT_FINGERPRINT
+  default n
+  help
+    Switch for tinno fingerprint
+
+config FINGERPRINT_GOODIX_GF9628_QSEE
+  bool FINGERPRINT_GOODIX_GF9628_QSEE
+  default n
+  help
+    Goodix Fingerprint chip GF9628 QSEE driver
+
+config FINGERPRINT_FOCAL_FT9801_QSEE
+    tristate "FocalTech Fingerprint"
+    default n
+    help
+      If you say Y to this option, support will be included for
+      the FocalTech's fingerprint sensor. This driver supports
+      both REE and TEE.
+
+      This driver can also be built as a module. If so, the module
+      will be called 'focaltech_fp'.
+
