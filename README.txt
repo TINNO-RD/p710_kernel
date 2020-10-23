@@ -1,12 +1,38 @@
-build:
-export PATH=$PATH:$PWD/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
-mkdir out
-make ARCH=arm64 O=out p710-perf_defconfig
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- O=out -j8
+1. Android build
+  - Download original android source code ( android-10.0.0_r6 ) from http://source.android.com
+  ( $repo init -u https://android.googlesource.com/platform/manifest -b android-10.0.0_r6
+    $repo sync -cdq -j12 --no-tags
+    $repo start android-10.0.0_r6 --all
+  )
 
-out:
-Kernel : arch/arm64/boot/Image.gz
+  - Run following scripts to build android
+    a) source build/envsetup.sh
+    b) lunch 1
+	c)export ALLOW_MISSING_DEPENDENCIES=true
+    d) make -j4
+	
+  - When you compile the android source code, you have to add google original prebuilt source(toolchain) into the android directory.
+  - After build, you can find output at out/target/product/generic
 
-clean:
-make ARCH=arm64 distclean
-rm -rf out
+2. Kernel Build  
+  - Uncompress using following command at the android directory
+        a) tar -xvzf *_Kernel.tar.gz
+
+  - When you compile the kernel source code, you have to add google original "prebuilt" source(toolchain) into the android directory.
+  - Run following scripts to build kernel
+
+
+ 
+ 0.0) git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9
+ 0.1) cd aarch64-linux-android-4.9/
+ 0.2) git checkout android10-mainline-a-release
+ 1) cross=$PWD/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+ 2）cd ../kernel-4.9
+ 3）mkdir out
+ 4）kernel_out_dir=$PWD/out
+ 5）make ARCH=arm64 CROSS_COMPILE=$cross O=$kernel_out_dir p710-perf_defconfig
+ 6）make ARCH=arm64 CROSS_COMPILE=$cross O=$kernel_out_dir KCFLAGS=-mno-android headers_install
+ 7）TARGET_PRODUCT=p710 make ARCH=arm64 CROSS_COMPILE=$cross O=$kernel_out_dir KCFLAGS=-mno-android -j1
+
+* "-j1" : The number, 16, is the number of multiple jobs to be invoked simultaneously. 
+- After build, you can find the build image(zImage) at out/arch/arm/
